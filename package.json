@@ -10,7 +10,8 @@
     "dev:business": "pnpm --filter @partner-os/app-business dev",
     "dev:partner": "pnpm --filter @partner-os/app-partner dev",
     "dev:api": "pnpm --filter @partner-os/api-server dev",
-    "lint": "pnpm -r run lint",
+    "lint": "pnpm -r --if-present run lint",
+    "test": "pnpm -r --if-present run test",
     "typecheck": "pnpm -r run typecheck"
   },
   "devDependencies": {

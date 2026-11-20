@@ -2,10 +2,12 @@
   "name": "@partner-os/api-server",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types test/commission-engine.test.ts"
   },
   "dependencies": {
     "@partner-os/shared-types": "workspace:*",
