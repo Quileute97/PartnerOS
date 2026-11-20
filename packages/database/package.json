@@ -1,0 +1,6 @@
+{
+  "name": "@partner-os/database",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Supabase PostgreSQL migrations, RLS policies, and database utilities for PartnerOS"
+}

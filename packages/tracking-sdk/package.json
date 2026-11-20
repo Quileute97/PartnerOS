@@ -1,0 +1,13 @@
+{
+  "name": "@partner-os/tracking-sdk",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/partneros-sdk.ts",
+  "types": "./src/partneros-sdk.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

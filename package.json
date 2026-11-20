@@ -1,0 +1,19 @@
+{
+  "name": "partner-os",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Multi-tenant CRM with Affiliate Marketplace and Centralized Commission Settlement",
+  "author": "PartnerOS Team",
+  "license": "MIT",
+  "scripts": {
+    "build": "pnpm -r run build",
+    "dev:business": "pnpm --filter @partner-os/app-business dev",
+    "dev:partner": "pnpm --filter @partner-os/app-partner dev",
+    "dev:api": "pnpm --filter @partner-os/api-server dev",
+    "lint": "pnpm -r run lint",
+    "typecheck": "pnpm -r run typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

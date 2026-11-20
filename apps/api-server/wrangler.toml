@@ -1,0 +1,12 @@
+name = "partner-os-api"
+main = "src/index.ts"
+compatibility_date = "2024-04-05"
+
+[vars]
+ENVIRONMENT = "development"
+SUPABASE_URL = "https://your-project.supabase.co"
+
+# Bindings for Cloudflare R2 and KV if needed
+# [[r2_buckets]]
+# binding = 'STORAGE_BUCKET'
+# bucket_name = 'partner-os-assets'
