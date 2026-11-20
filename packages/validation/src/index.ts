@@ -74,36 +74,138 @@ export const updateMemberRoleSchema = z.object({
 export type UpdateMemberRoleInput = z.infer<typeof updateMemberRoleSchema>;
 
 // ==========================================
-// 4. CRM Schemas
+// 4. CRM: Contacts & Leads
 // ==========================================
 export const createContactSchema = z.object({
   name: z.string().min(2, 'Tên khách hàng tối thiểu 2 ký tự'),
   phone: z.string().min(8, 'Số điện thoại không hợp lệ'),
-  email: z.string().email().nullable().optional(),
+  email: z.string().email('Email không đúng định dạng').nullable().optional(),
   address: z.string().optional(),
-  partnerId: z.string().uuid().nullable().optional(),
+  branchId: z.string().optional(),
+  tags: z.array(z.string()).default([]),
+  assignedTo: z.string().optional(),
+  partnerId: z.string().nullable().optional(),
   referralCode: z.string().optional(),
   customFields: z.record(z.any()).default({})
 });
 
 export type CreateContactInput = z.infer<typeof createContactSchema>;
 
+export const updateContactSchema = createContactSchema.partial();
+export type UpdateContactInput = z.infer<typeof updateContactSchema>;
+
+export const createLeadSchema = z.object({
+  name: z.string().min(2, 'Tên khách hàng tiềm năng tối thiểu 2 ký tự'),
+  phone: z.string().min(8, 'Số điện thoại không hợp lệ'),
+  email: z.string().email().nullable().optional(),
+  source: z.string().default('direct'),
+  branchId: z.string().optional(),
+  status: z.enum(['new', 'contacted', 'qualified', 'unqualified', 'converted']).default('new'),
+  score: z.number().int().min(0).max(100).default(50),
+  estimatedValue: z.number().nonnegative().default(0),
+  assignedTo: z.string().optional(),
+  partnerId: z.string().nullable().optional(),
+  referralCode: z.string().optional(),
+  followUpDate: z.string().optional(),
+  notes: z.string().optional(),
+  customFields: z.record(z.any()).default({})
+});
+
+export type CreateLeadInput = z.infer<typeof createLeadSchema>;
+
+export const convertLeadSchema = z.object({
+  createDeal: z.boolean().default(true),
+  dealTitle: z.string().optional(),
+  dealValue: z.number().nonnegative().optional(),
+  pipelineId: z.string().optional(),
+  stageId: z.string().optional()
+});
+
+export type ConvertLeadInput = z.infer<typeof convertLeadSchema>;
+
+// ==========================================
+// 5. CRM: Deals & Pipelines
+// ==========================================
 export const createDealSchema = z.object({
-  contactId: z.string().uuid('Contact ID không hợp lệ'),
-  pipelineId: z.string().uuid('Pipeline ID không hợp lệ'),
-  stageId: z.string().uuid('Stage ID không hợp lệ'),
+  contactId: z.string().min(1, 'Contact ID không được để trống'),
+  pipelineId: z.string().min(1, 'Pipeline ID không được để trống'),
+  stageId: z.string().min(1, 'Stage ID không được để trống'),
+  branchId: z.string().optional(),
   title: z.string().min(3, 'Tên cơ hội/hợp đồng không được để trống'),
   value: z.number().nonnegative('Giá trị deal không được âm'),
   currency: z.string().default('VND'),
-  partnerId: z.string().uuid().nullable().optional(),
+  partnerId: z.string().nullable().optional(),
   referralCode: z.string().optional(),
+  assignedTo: z.string().optional(),
   customFields: z.record(z.any()).default({})
 });
 
 export type CreateDealInput = z.infer<typeof createDealSchema>;
 
 // ==========================================
-// 5. Affiliate Campaign Schemas
+// 6. Products & Services Catalog
+// ==========================================
+export const createProductSchema = z.object({
+  sku: z.string().min(2, 'Mã SKU tối thiểu 2 ký tự').toUpperCase(),
+  name: z.string().min(2, 'Tên sản phẩm/dịch vụ tối thiểu 2 ký tự'),
+  description: z.string().optional(),
+  category: z.string().min(1, 'Danh mục không được để trống'),
+  type: z.enum(['product', 'service']).default('service'),
+  unitPrice: z.number().positive('Đơn giá phải lớn hơn 0'),
+  currency: z.string().default('VND'),
+  isCommissionEligible: z.boolean().default(true),
+  defaultCommissionRate: z.number().nonnegative().optional(),
+  isActive: z.boolean().default(true)
+});
+
+export type CreateProductInput = z.infer<typeof createProductSchema>;
+
+// ==========================================
+// 7. Transactions & Orders
+// ==========================================
+export const orderItemSchema = z.object({
+  productId: z.string().min(1),
+  productName: z.string().min(1),
+  sku: z.string().min(1),
+  quantity: z.number().int().positive('Số lượng phải từ 1 trở lên'),
+  unitPrice: z.number().nonnegative()
+});
+
+export const createTransactionSchema = z.object({
+  customerId: z.string().min(1, 'Khách hàng không được để trống'),
+  branchId: z.string().optional(),
+  dealId: z.string().optional(),
+  partnerId: z.string().nullable().optional(),
+  referralCode: z.string().optional(),
+  items: z.array(orderItemSchema).min(1, 'Giao dịch phải có ít nhất 1 sản phẩm/dịch vụ'),
+  discount: z.number().nonnegative().default(0),
+  currency: z.string().default('VND'),
+  paymentMethod: z.string().default('bank_transfer'),
+  status: z.enum(['pending', 'confirmed', 'paid', 'completed', 'cancelled', 'refunded']).default('paid'),
+  paymentStatus: z.enum(['unpaid', 'partially_paid', 'paid', 'refunded']).default('paid'),
+  idempotencyKey: z.string().optional(),
+  notes: z.string().optional()
+});
+
+export type CreateTransactionInput = z.infer<typeof createTransactionSchema>;
+
+// ==========================================
+// 8. Activities & Notes
+// ==========================================
+export const createActivitySchema = z.object({
+  contactId: z.string().optional(),
+  dealId: z.string().optional(),
+  leadId: z.string().optional(),
+  type: z.enum(['call', 'meeting', 'email', 'note', 'stage_change', 'order_created', 'system']),
+  title: z.string().min(2, 'Tiêu đề hoạt động tối thiểu 2 ký tự'),
+  description: z.string().default(''),
+  metadata: z.record(z.any()).optional()
+});
+
+export type CreateActivityInput = z.infer<typeof createActivitySchema>;
+
+// ==========================================
+// 9. Affiliate Campaign Schemas
 // ==========================================
 export const createCampaignSchema = z.object({
   title: z.string().min(5, 'Tiêu đề chiến dịch tối thiểu 5 ký tự'),
