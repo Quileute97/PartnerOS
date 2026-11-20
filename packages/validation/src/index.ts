@@ -219,3 +219,55 @@ export const createCampaignSchema = z.object({
 });
 
 export type CreateCampaignInput = z.infer<typeof createCampaignSchema>;
+
+export const updateCampaignPolicySchema = z.object({
+  commissionType: z.enum(['percentage', 'fixed_amount']),
+  commissionRate: z.number().positive('Tỷ lệ hoa hồng phải lớn hơn 0'),
+  cookieWindowDays: z.number().int().min(1, 'Cookie window tối thiểu 1 ngày').default(60),
+  minDealValue: z.number().nonnegative().default(0),
+  termsAndConditions: z.string().optional()
+});
+
+export type UpdateCampaignPolicyInput = z.infer<typeof updateCampaignPolicySchema>;
+
+export const applyCampaignSchema = z.object({
+  applicationNote: z.string().optional(),
+  policyVersionAgreed: z.number().int().positive().default(1)
+});
+
+export type ApplyCampaignInput = z.infer<typeof applyCampaignSchema>;
+
+export const createReferralLinkSchema = z.object({
+  campaignId: z.string().min(1, 'Campaign ID không được để trống'),
+  customSlug: z.string().regex(/^[a-zA-Z0-9_-]+$/, 'Mã slug chỉ chứa chữ, số, gạch ngang và gạch dưới').optional(),
+  destinationUrl: z.string().url('URL đích không hợp lệ').optional()
+});
+
+export type CreateReferralLinkInput = z.infer<typeof createReferralLinkSchema>;
+
+export const trackClickSchema = z.object({
+  referralCode: z.string().min(1, 'Mã giới thiệu không được để trống'),
+  sessionId: z.string().optional(),
+  landingPageUrl: z.string().min(1, 'URL trang đích không được để trống'),
+  referrerUrl: z.string().nullable().optional(),
+  userAgent: z.string().optional(),
+  deviceFingerprint: z.string().optional()
+});
+
+export type TrackClickInput = z.infer<typeof trackClickSchema>;
+
+export const trackConversionSchema = z.object({
+  referralCode: z.string().optional(),
+  sessionId: z.string().optional(),
+  tenantId: z.string().optional(),
+  tenantSlug: z.string().optional(),
+  contactName: z.string().min(2, 'Họ tên khách hàng tối thiểu 2 ký tự'),
+  contactPhone: z.string().min(8, 'Số điện thoại không hợp lệ'),
+  contactEmail: z.string().email('Email không đúng định dạng').optional(),
+  dealValue: z.number().nonnegative().default(0),
+  dealTitle: z.string().optional(),
+  idempotencyKey: z.string().optional(),
+  customFields: z.record(z.any()).optional()
+});
+
+export type TrackConversionInput = z.infer<typeof trackConversionSchema>;
