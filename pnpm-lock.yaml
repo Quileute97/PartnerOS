@@ -132,7 +132,15 @@ importers:
         specifier: ^6.2.0
         version: 6.4.6(jiti@1.21.7)
 
+  packages/database: {}
+
   packages/shared-types:
+    devDependencies:
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+
+  packages/tracking-sdk:
     devDependencies:
       typescript:
         specifier: ^5.7.3

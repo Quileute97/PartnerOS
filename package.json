@@ -5,6 +5,10 @@
   "description": "Multi-tenant CRM with Affiliate Marketplace and Centralized Commission Settlement",
   "author": "PartnerOS Team",
   "license": "MIT",
+  "packageManager": "pnpm@10.33.2",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "build": "pnpm -r run build",
     "dev:business": "pnpm --filter @partner-os/app-business dev",
