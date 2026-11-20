@@ -94,3 +94,45 @@ export interface SettlementItem {
   status: 'pending' | 'paid' | 'failed';
   paidAt?: string | null;
 }
+
+export type PayoutRequestStatus = 'pending' | 'processing' | 'completed' | 'rejected' | 'cancelled';
+
+export interface PayoutRequest {
+  id: string;
+  partnerId: string;
+  amount: number;
+  currency: string;
+  bankName: string;
+  bankAccountNumber: string;
+  bankAccountName: string;
+  status: PayoutRequestStatus;
+  transactionReference?: string | null;
+  rejectionReason?: string | null;
+  requestedAt: string;
+  processedAt?: string | null;
+  processedBy?: string | null;
+}
+
+export interface CommissionRule {
+  id: string;
+  tenantId: string;
+  campaignId: string;
+  name: string;
+  priority: number;
+  ruleType: 'standard' | 'tiered_volume' | 'product_specific' | 'first_time_customer';
+  conditions: Record<string, any>;
+  commissionType: 'percentage' | 'fixed_amount';
+  commissionRate: number;
+  holdPeriodDays: number;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface LedgerReconciliationReport {
+  totalDebit: number;
+  totalCredit: number;
+  isBalanced: boolean;
+  entriesCount: number;
+  discrepancy: number;
+  verifiedAt: string;
+}

@@ -83,6 +83,57 @@ export function App() {
   const [customSlug, setCustomSlug] = useState('');
   const [selectedCampaignForLink, setSelectedCampaignForLink] = useState('camp-1');
 
+  // Wallet & Payout State
+  const [isPayoutModalOpen, setIsPayoutModalOpen] = useState(false);
+  const [payoutAmount, setPayoutAmount] = useState('16500000');
+  const [bankName, setBankName] = useState('Vietcombank');
+  const [bankAccountNumber, setBankAccountNumber] = useState('0071001234567');
+  const [bankAccountName, setBankAccountName] = useState('NGUYEN VAN TUAN');
+  const [walletBalances, setWalletBalances] = useState({
+    available: 16500000,
+    pending: 3500000,
+    settling: 0,
+    lifetime: 128400000
+  });
+
+  const [ledgerHistory, setLedgerHistory] = useState([
+    { title: 'Trồng răng Implant - Khách: Phạm Minh Đức', enterprise: 'Nha Khoa SmileCare', amount: '+3,500,000 ₫', status: 'Chờ duyệt', date: '20/11/2026' },
+    { title: 'Bọc răng sứ HT - Khách: Vũ Lan Anh', enterprise: 'Nha Khoa SmileCare', amount: '+2,400,000 ₫', status: 'Đã duyệt', date: '18/11/2026' },
+    { title: 'Căn hộ Grand View - Khách: Lê Minh Tuấn', enterprise: 'BĐS SkyLand', amount: '+50,000,000 ₫', status: 'Đã chi trả', date: '15/11/2026' },
+  ]);
+
+  const handleConfirmPayout = (e: React.FormEvent) => {
+    e.preventDefault();
+    const amountNum = Number(payoutAmount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      alert('Vui lòng nhập số tiền rút hợp lệ');
+      return;
+    }
+    if (amountNum > walletBalances.available) {
+      alert('Số tiền rút vượt quá số dư khả dụng');
+      return;
+    }
+
+    setWalletBalances({
+      ...walletBalances,
+      available: walletBalances.available - amountNum,
+      settling: walletBalances.settling + amountNum
+    });
+
+    const newLedgerItem = {
+      title: `Yêu cầu rút tiền về ${bankName} (${bankAccountNumber})`,
+      enterprise: 'Hệ thống PartnerOS',
+      amount: `-${amountNum.toLocaleString('vi-VN')} ₫`,
+      status: 'Đang đối soát',
+      date: new Date().toLocaleDateString('vi-VN')
+    };
+
+    setLedgerHistory([newLedgerItem, ...ledgerHistory]);
+    setIsPayoutModalOpen(false);
+    setJoinedSuccessMessage(`Đã gửi yêu cầu rút ${amountNum.toLocaleString('vi-VN')} ₫ về tài khoản ${bankName} thành công!`);
+    setTimeout(() => setJoinedSuccessMessage(null), 6000);
+  };
+
   // Initial Campaigns Data
   const [campaigns, setCampaigns] = useState<CampaignItem[]>([
     {
@@ -690,10 +741,16 @@ export function App() {
               <div className="flex justify-between items-start relative z-10">
                 <div>
                   <span className="text-xs uppercase tracking-wider text-emerald-400 font-semibold">Số dư khả dụng</span>
-                  <h2 className="text-3xl font-extrabold mt-1 text-white">16,500,000 ₫</h2>
+                  <h2 className="text-3xl font-extrabold mt-1 text-white">
+                    {walletBalances.available.toLocaleString('vi-VN')} ₫
+                  </h2>
                   <p className="text-xs text-slate-400 mt-1">Sẽ tự động chuyển khoản vào ngày 15 hàng tháng theo tài khoản ngân hàng liên kết</p>
                 </div>
-                <Button variant="primary" className="bg-emerald-500 hover:bg-emerald-600 text-white border-0 shadow-lg shadow-emerald-500/20">
+                <Button 
+                  variant="primary" 
+                  onClick={() => setIsPayoutModalOpen(true)}
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white border-0 shadow-lg shadow-emerald-500/20"
+                >
                   Rút tiền về Ngân hàng
                 </Button>
               </div>
@@ -701,15 +758,15 @@ export function App() {
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-slate-800 relative z-10">
                 <div>
                   <span className="text-xs text-slate-400">Chờ duyệt (Pending)</span>
-                  <p className="text-base font-bold text-amber-400">3,500,000 ₫</p>
+                  <p className="text-base font-bold text-amber-400">{walletBalances.pending.toLocaleString('vi-VN')} ₫</p>
                 </div>
                 <div>
                   <span className="text-xs text-slate-400">Đang đối soát</span>
-                  <p className="text-base font-bold text-sky-400">0 ₫</p>
+                  <p className="text-base font-bold text-sky-400">{walletBalances.settling.toLocaleString('vi-VN')} ₫</p>
                 </div>
                 <div>
                   <span className="text-xs text-slate-400">Tổng đã nhận (Lifetime)</span>
-                  <p className="text-base font-bold text-emerald-400">128,400,000 ₫</p>
+                  <p className="text-base font-bold text-emerald-400">{walletBalances.lifetime.toLocaleString('vi-VN')} ₫</p>
                 </div>
               </div>
             </div>
@@ -722,11 +779,7 @@ export function App() {
               </CardHeader>
               <CardContent className="p-0">
                 <div className="divide-y divide-slate-100">
-                  {[
-                    { title: 'Trồng răng Implant - Khách: Phạm Minh Đức', enterprise: 'Nha Khoa SmileCare', amount: '+3,500,000 ₫', status: 'Chờ duyệt', date: '20/11/2026' },
-                    { title: 'Bọc răng sứ HT - Khách: Vũ Lan Anh', enterprise: 'Nha Khoa SmileCare', amount: '+2,400,000 ₫', status: 'Đã duyệt', date: '18/11/2026' },
-                    { title: 'Căn hộ Grand View - Khách: Lê Minh Tuấn', enterprise: 'BĐS SkyLand', amount: '+50,000,000 ₫', status: 'Đã chi trả', date: '15/11/2026' },
-                  ].map((item, i) => (
+                  {ledgerHistory.map((item, i) => (
                     <div key={i} className="p-4 flex items-center justify-between hover:bg-slate-50">
                       <div>
                         <p className="text-sm font-semibold text-slate-900">{item.title}</p>
@@ -736,7 +789,9 @@ export function App() {
                         </p>
                       </div>
                       <div className="text-right">
-                        <span className="text-sm font-bold text-emerald-600">{item.amount}</span>
+                        <span className={`text-sm font-bold ${item.amount.startsWith('-') ? 'text-rose-600' : 'text-emerald-600'}`}>
+                          {item.amount}
+                        </span>
                         <div>
                           <Badge variant={item.status === 'Đã chi trả' ? 'success' : item.status === 'Đã duyệt' ? 'info' : 'warning'}>
                             {item.status}
@@ -834,6 +889,104 @@ export function App() {
                 Xác nhận & Cấp Link ngay
               </Button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: PAYOUT REQUEST */}
+      {isPayoutModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div className="flex justify-between items-start border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">Yêu cầu rút tiền hoa hồng</h3>
+                <p className="text-xs text-slate-500">
+                  Số dư khả dụng: <strong className="text-emerald-600">{walletBalances.available.toLocaleString('vi-VN')} ₫</strong>
+                </p>
+              </div>
+              <button 
+                onClick={() => setIsPayoutModalOpen(false)} 
+                className="text-slate-400 hover:text-slate-600 text-lg font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleConfirmPayout} className="space-y-3">
+              <div>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Số tiền muốn rút (VNĐ):</label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    min="100000"
+                    max={walletBalances.available}
+                    value={payoutAmount}
+                    onChange={(e) => setPayoutAmount(e.target.value)}
+                    className="w-full text-sm font-semibold p-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setPayoutAmount(walletBalances.available.toString())}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded hover:bg-emerald-100"
+                  >
+                    Tối đa
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Ngân hàng thụ hưởng:</label>
+                <select
+                  value={bankName}
+                  onChange={(e) => setBankName(e.target.value)}
+                  className="w-full text-xs p-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="Vietcombank">Vietcombank (Ngoại thương Việt Nam)</option>
+                  <option value="Techcombank">Techcombank (Kỹ thương)</option>
+                  <option value="MB Bank">MB Bank (Quân đội)</option>
+                  <option value="ACB">ACB (Á Châu)</option>
+                  <option value="VPBank">VPBank (Việt Nam Thịnh Vượng)</option>
+                  <option value="VietinBank">VietinBank (Công thương)</option>
+                  <option value="BIDV">BIDV (Đầu tư và Phát triển)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Số tài khoản ngân hàng:</label>
+                <input
+                  type="text"
+                  value={bankAccountNumber}
+                  onChange={(e) => setBankAccountNumber(e.target.value)}
+                  className="w-full text-xs font-mono p-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Tên chủ tài khoản (Không dấu):</label>
+                <input
+                  type="text"
+                  value={bankAccountName}
+                  onChange={(e) => setBankAccountName(e.target.value.toUpperCase())}
+                  className="w-full text-xs font-semibold uppercase p-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  required
+                />
+              </div>
+
+              <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-[11px] text-slate-500">
+                Giao dịch giải ngân sẽ được đối soát và chuyển khoản tự động qua hệ thống VietQR / Napas 24/7.
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                <Button variant="outline" size="sm" type="button" onClick={() => setIsPayoutModalOpen(false)}>
+                  Huỷ
+                </Button>
+                <Button size="sm" type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                  Xác nhận rút tiền
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       )}

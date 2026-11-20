@@ -271,3 +271,29 @@ export const trackConversionSchema = z.object({
 });
 
 export type TrackConversionInput = z.infer<typeof trackConversionSchema>;
+
+// ==========================================
+// 10. Phase 4: Financial & Settlement Schemas
+// ==========================================
+export const createPayoutRequestSchema = z.object({
+  amount: z.number().positive('Số tiền rút phải lớn hơn 0'),
+  bankName: z.string().min(2, 'Tên ngân hàng không được để trống'),
+  bankAccountNumber: z.string().min(4, 'Số tài khoản ngân hàng không hợp lệ'),
+  bankAccountName: z.string().min(2, 'Tên chủ tài khoản không được để trống')
+});
+
+export type CreatePayoutRequestInput = z.infer<typeof createPayoutRequestSchema>;
+
+export const generateSettlementBatchSchema = z.object({
+  periodStart: z.string(),
+  periodEnd: z.string(),
+  note: z.string().optional()
+});
+
+export type GenerateSettlementBatchInput = z.infer<typeof generateSettlementBatchSchema>;
+
+export const reverseCommissionSchema = z.object({
+  reason: z.string().min(3, 'Lý do hoàn/huỷ hoa hồng tối thiểu 3 ký tự')
+});
+
+export type ReverseCommissionInput = z.infer<typeof reverseCommissionSchema>;
