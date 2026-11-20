@@ -8,15 +8,18 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types test/commission-engine.test.ts"
+    "test": "tsx test/commission-engine.test.ts && tsx test/phase0-auth-isolation.test.ts"
   },
   "dependencies": {
+    "@partner-os/permissions": "workspace:*",
     "@partner-os/shared-types": "workspace:*",
+    "@partner-os/validation": "workspace:*",
     "@supabase/supabase-js": "^2.49.1",
     "hono": "^4.7.2"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250224.0",
+    "tsx": "^4.23.15",
     "typescript": "^5.7.3",
     "wrangler": "^3.111.0"
   }

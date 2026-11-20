@@ -11,8 +11,10 @@
   },
   "scripts": {
     "build": "pnpm -r run build",
+    "dev:website": "pnpm --filter @partner-os/website dev",
     "dev:business": "pnpm --filter @partner-os/app-business dev",
     "dev:partner": "pnpm --filter @partner-os/app-partner dev",
+    "dev:admin": "pnpm --filter @partner-os/admin-console dev",
     "dev:api": "pnpm --filter @partner-os/api-server dev",
     "lint": "pnpm -r --if-present run lint",
     "test": "pnpm -r --if-present run test",
