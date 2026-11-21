@@ -6,6 +6,9 @@ import { trackRouter } from './routes/track';
 import { crmRouter } from './routes/crm';
 import { affiliateRouter } from './routes/affiliate';
 import { financeRouter } from './routes/finance';
+import { customizationRouter } from './routes/customization';
+import { riskRouter } from './routes/risk';
+import { integrationsRouter } from './routes/integrations';
 
 const app = new Hono();
 
@@ -13,7 +16,7 @@ const app = new Hono();
 app.use('*', cors({
   origin: '*',
   allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization', 'x-tenant-id', 'x-organization-id', 'x-partner-id', 'x-user-id']
+  allowHeaders: ['Content-Type', 'Authorization', 'x-tenant-id', 'x-organization-id', 'x-partner-id', 'x-user-id', 'x-entity-id']
 }));
 
 // Health check
@@ -33,5 +36,8 @@ app.route('/api/v1/track', trackRouter);
 app.route('/api/v1/crm', crmRouter);
 app.route('/api/v1/affiliate', affiliateRouter);
 app.route('/api/v1/finance', financeRouter);
+app.route('/api/v1/customization', customizationRouter);
+app.route('/api/v1/risk', riskRouter);
+app.route('/api/v1/integrations', integrationsRouter);
 
 export default app;

@@ -297,3 +297,50 @@ export const reverseCommissionSchema = z.object({
 });
 
 export type ReverseCommissionInput = z.infer<typeof reverseCommissionSchema>;
+
+// ==========================================
+// 11. Phase 2: CRM Customization Schemas
+// ==========================================
+export const createCustomFieldSchema = z.object({
+  entityType: z.enum(['contact', 'deal', 'lead', 'product']),
+  fieldName: z.string().min(2).regex(/^[a-z0-9_]+$/, 'Tên field chỉ được chứa chữ thường, số và dấu gạch dưới'),
+  label: z.string().min(2, 'Nhãn trường tối thiểu 2 ký tự'),
+  fieldType: z.enum([
+    'text', 'number', 'select', 'multi_select', 'date', 'datetime', 
+    'boolean', 'phone', 'email', 'url', 'textarea'
+  ]),
+  options: z.array(z.object({
+    label: z.string(),
+    value: z.string(),
+    color: z.string().optional()
+  })).optional(),
+  isRequired: z.boolean().default(false),
+  defaultValue: z.any().optional(),
+  placeholder: z.string().optional(),
+  sortOrder: z.number().int().default(0)
+});
+
+export type CreateCustomFieldInput = z.infer<typeof createCustomFieldSchema>;
+
+export const createCustomFormSchema = z.object({
+  name: z.string().min(2, 'Tên form tối thiểu 2 ký tự'),
+  slug: z.string().min(2).regex(/^[a-z0-9-]+$/),
+  title: z.string().min(2),
+  description: z.string().optional(),
+  fieldsConfig: z.array(z.string()).min(1, 'Form phải có ít nhất 1 trường'),
+  submitButtonText: z.string().default('Gửi thông tin'),
+  successMessage: z.string().default('Cảm ơn bạn! Thông tin đã được gửi.')
+});
+
+export type CreateCustomFormInput = z.infer<typeof createCustomFormSchema>;
+
+export const updateThemeConfigSchema = z.object({
+  primaryColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Mã màu HEX không hợp lệ (VD: #4f46e5)'),
+  accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
+  fontFamily: z.string().optional(),
+  borderRadius: z.string().optional(),
+  logoUrl: z.string().url().nullable().optional(),
+  portalTitle: z.string().optional()
+});
+
+export type UpdateThemeConfigInput = z.infer<typeof updateThemeConfigSchema>;

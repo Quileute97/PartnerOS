@@ -8,7 +8,7 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",
     "typecheck": "tsc --noEmit",
-    "test": "tsx test/commission-engine.test.ts && tsx test/phase0-auth-isolation.test.ts && tsx test/phase1-crm.test.ts && tsx test/phase3-marketplace-attribution.test.ts && tsx test/phase4-commission-financial-core.test.ts"
+    "test": "tsx test/commission-engine.test.ts && tsx test/phase0-auth-isolation.test.ts && tsx test/phase1-crm.test.ts && tsx test/phase2-crm-customization.test.ts && tsx test/phase3-marketplace-attribution.test.ts && tsx test/phase4-commission-financial-core.test.ts && tsx test/phase5-trust-risk.test.ts && tsx test/phase6-integrations-whitelabel.test.ts"
   },
   "dependencies": {
     "@partner-os/permissions": "workspace:*",
