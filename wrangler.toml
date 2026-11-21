@@ -1,0 +1,7 @@
+name = "partner-os-api"
+main = "apps/api-server/src/index.ts"
+compatibility_date = "2024-04-05"
+
+[vars]
+ENVIRONMENT = "production"
+SUPABASE_URL = "https://your-project.supabase.co"

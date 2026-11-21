@@ -20,6 +20,7 @@
     "dev:partner": "pnpm --filter @partner-os/app-partner dev",
     "dev:admin": "pnpm --filter @partner-os/admin-console dev",
     "dev:api": "pnpm --filter @partner-os/api-server dev",
+    "deploy": "wrangler deploy --config apps/api-server/wrangler.toml",
     "deploy:api": "pnpm --filter @partner-os/api-server deploy",
     "lint": "pnpm -r --if-present run lint",
     "test": "pnpm -r --if-present run test",
