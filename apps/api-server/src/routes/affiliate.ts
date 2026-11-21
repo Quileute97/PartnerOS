@@ -9,10 +9,11 @@ import type { AffiliateCampaign, ReferralLink } from '@partner-os/shared-types';
 import { AffiliateStore } from '../state/affiliate-store';
 
 export const affiliateRouter = new Hono();
-const store = AffiliateStore.getInstance();
+const getStore = () => AffiliateStore.getInstance();
 
 // 1. Get marketplace campaigns with filters
 affiliateRouter.get('/campaigns/marketplace', async (c) => {
+  const store = getStore();
   const search = c.req.query('search');
   const industry = c.req.query('industry');
   const commissionType = c.req.query('commissionType') as any;
@@ -37,6 +38,7 @@ affiliateRouter.get('/campaigns/marketplace', async (c) => {
 
 // 2. Get campaign details & policy versions
 affiliateRouter.get('/campaigns/:id', async (c) => {
+  const store = getStore();
   const id = c.req.param('id');
   const campaign = store.getCampaignById(id);
 
@@ -57,6 +59,7 @@ affiliateRouter.get('/campaigns/:id', async (c) => {
 
 // 3. Create a new campaign (Tenant/Business action)
 affiliateRouter.post('/campaigns', async (c) => {
+  const store = getStore();
   const tenantId = c.req.header('x-tenant-id') || 'tenant-dental-01';
   const body = await c.req.json();
   const parsed = createCampaignSchema.safeParse(body);
@@ -105,6 +108,7 @@ affiliateRouter.post('/campaigns', async (c) => {
 
 // 4. Update campaign policy (creates immutable policy version)
 affiliateRouter.put('/campaigns/:id/policy', async (c) => {
+  const store = getStore();
   const campaignId = c.req.param('id');
   const body = await c.req.json();
   const parsed = updateCampaignPolicySchema.safeParse(body);
@@ -131,6 +135,7 @@ affiliateRouter.put('/campaigns/:id/policy', async (c) => {
 
 // 5. Partner applies to join campaign
 affiliateRouter.post('/campaigns/:id/apply', async (c) => {
+  const store = getStore();
   const campaignId = c.req.param('id');
   const partnerId = c.req.header('x-partner-id') || 'partner-001';
   const rawPartnerName = c.req.header('x-partner-name');
@@ -170,6 +175,7 @@ affiliateRouter.post('/campaigns/:id/apply', async (c) => {
 
 // 6. List campaigns joined by current partner
 affiliateRouter.get('/my-campaigns', async (c) => {
+  const store = getStore();
   const partnerId = c.req.header('x-partner-id') || 'partner-001';
   const registrations = store.getPartnerCampaigns(partnerId);
 
@@ -181,6 +187,7 @@ affiliateRouter.get('/my-campaigns', async (c) => {
 
 // 7. Generate a new custom referral link
 affiliateRouter.post('/links', async (c) => {
+  const store = getStore();
   const partnerId = c.req.header('x-partner-id') || 'partner-001';
   const body = await c.req.json();
   const parsed = createReferralLinkSchema.safeParse(body);
@@ -234,6 +241,7 @@ affiliateRouter.post('/links', async (c) => {
 
 // 8. List partner's links and QR codes
 affiliateRouter.get('/my-links', async (c) => {
+  const store = getStore();
   const partnerId = c.req.header('x-partner-id') || 'partner-001';
   const links = store.getPartnerLinks(partnerId);
 

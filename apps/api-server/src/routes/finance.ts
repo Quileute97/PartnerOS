@@ -7,10 +7,11 @@ import {
 import { FinanceStore } from '../state/finance-store';
 
 export const financeRouter = new Hono();
-const store = FinanceStore.getInstance();
+const getStore = () => FinanceStore.getInstance();
 
 // 1. List commissions with optional filtering
 financeRouter.get('/commissions', async (c) => {
+  const store = getStore();
   const tenantId = c.req.header('x-tenant-id');
   const partnerId = c.req.query('partnerId') || c.req.header('x-partner-id');
   const status = c.req.query('status');
@@ -36,6 +37,7 @@ financeRouter.get('/commissions', async (c) => {
 
 // 2. Record new commission (typically called when a deal or order is completed)
 financeRouter.post('/commissions', async (c) => {
+  const store = getStore();
   const body = await c.req.json();
   const tenantId = c.req.header('x-tenant-id') || body.tenantId || 'tenant-dental-01';
 
@@ -68,6 +70,7 @@ financeRouter.post('/commissions', async (c) => {
 
 // 3. Approve commission (Moves status: pending -> approved, posts to Double-Entry Ledger)
 financeRouter.post('/commissions/:id/approve', async (c) => {
+  const store = getStore();
   const commissionId = c.req.param('id');
   const userId = c.req.header('x-user-id') || 'business-admin';
 
@@ -85,6 +88,7 @@ financeRouter.post('/commissions/:id/approve', async (c) => {
 
 // 4. Reverse commission (Compensating reversal entry in Ledger)
 financeRouter.post('/commissions/:id/reverse', async (c) => {
+  const store = getStore();
   const commissionId = c.req.param('id');
   const body = await c.req.json().catch(() => ({}));
   const parsed = reverseCommissionSchema.safeParse(body);
@@ -111,6 +115,7 @@ financeRouter.post('/commissions/:id/reverse', async (c) => {
 
 // 5. Get partner wallet balance
 financeRouter.get('/wallets/:partnerId', async (c) => {
+  const store = getStore();
   const partnerId = c.req.param('partnerId');
   const wallet = store.getOrCreateWallet(partnerId);
 
@@ -122,6 +127,7 @@ financeRouter.get('/wallets/:partnerId', async (c) => {
 
 // 6. Partner submits payout request
 financeRouter.post('/payouts/request', async (c) => {
+  const store = getStore();
   const partnerId = c.req.header('x-partner-id') || 'partner-001';
   const body = await c.req.json();
   const parsed = createPayoutRequestSchema.safeParse(body);
@@ -155,6 +161,7 @@ financeRouter.post('/payouts/request', async (c) => {
 
 // 7. List payout requests
 financeRouter.get('/payouts', async (c) => {
+  const store = getStore();
   const partnerId = c.req.query('partnerId') || c.req.header('x-partner-id');
   let payouts = Array.from(store.payoutRequests.values());
 
@@ -171,6 +178,7 @@ financeRouter.get('/payouts', async (c) => {
 
 // 8. Operator or Tenant completes payout (disburses cash)
 financeRouter.post('/payouts/:id/complete', async (c) => {
+  const store = getStore();
   const payoutId = c.req.param('id');
   const processedBy = c.req.header('x-user-id') || 'operator-settler';
   const body = await c.req.json().catch(() => ({}));
@@ -190,6 +198,7 @@ financeRouter.post('/payouts/:id/complete', async (c) => {
 
 // 9. Generate Settlement Batch (aggregates approved commissions)
 financeRouter.post('/settlements/batches/generate', async (c) => {
+  const store = getStore();
   const tenantId = c.req.header('x-tenant-id') || 'tenant-dental-01';
   const body = await c.req.json().catch(() => ({}));
   const parsed = generateSettlementBatchSchema.safeParse(body);
@@ -222,6 +231,7 @@ financeRouter.post('/settlements/batches/generate', async (c) => {
 
 // 10. List settlement batches
 financeRouter.get('/settlements/batches', async (c) => {
+  const store = getStore();
   const tenantId = c.req.header('x-tenant-id');
   let batches = Array.from(store.settlementBatches.values());
 
@@ -238,6 +248,7 @@ financeRouter.get('/settlements/batches', async (c) => {
 
 // 11. View immutable Double-Entry Ledger entries
 financeRouter.get('/ledger', async (c) => {
+  const store = getStore();
   const tenantId = c.req.header('x-tenant-id');
   let entries = store.ledger;
 
@@ -254,6 +265,7 @@ financeRouter.get('/ledger', async (c) => {
 
 // 12. Independent Ledger Reconciliation Report (Mathematical Balance Verification)
 financeRouter.get('/ledger/reconciliation', async (c) => {
+  const store = getStore();
   const report = store.getReconciliationReport();
 
   return c.json({

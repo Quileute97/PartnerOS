@@ -3,10 +3,11 @@ import { trackClickSchema, trackConversionSchema } from '@partner-os/validation'
 import { AffiliateStore } from '../state/affiliate-store';
 
 export const trackRouter = new Hono();
-const store = AffiliateStore.getInstance();
+const getStore = () => AffiliateStore.getInstance();
 
 // 1. Record a click on a partner referral link
 trackRouter.post('/click', async (c) => {
+  const store = getStore();
   const body = await c.req.json().catch(() => ({}));
   const parsed = trackClickSchema.safeParse(body);
 
@@ -51,6 +52,7 @@ trackRouter.post('/click', async (c) => {
 
 // 2. Record a conversion with deterministic attribution
 trackRouter.post('/conversion', async (c) => {
+  const store = getStore();
   const body = await c.req.json().catch(() => ({}));
   const parsed = trackConversionSchema.safeParse(body);
 
@@ -99,6 +101,7 @@ trackRouter.post('/conversion', async (c) => {
 
 // 3. Explain attribution for a conversion
 trackRouter.get('/attribution/:conversionId/explain', async (c) => {
+  const store = getStore();
   const conversionId = c.req.param('conversionId');
   const record = store.getAttributionExplanation(conversionId);
 

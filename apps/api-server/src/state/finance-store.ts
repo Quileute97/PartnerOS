@@ -83,10 +83,10 @@ export class FinanceStore {
     this.commissions.set(comm2.id, comm2);
 
     // Initial Ledger entries for comm2
-    const txGroup = crypto.randomUUID();
+    const txGroup = 'tx-group-seed-01';
     this.ledger.push(
       {
-        id: crypto.randomUUID(),
+        id: 'ledger-seed-debit-01',
         transactionGroupId: txGroup,
         tenantId: 'tenant-dental-01',
         partnerId: 'partner-001',
@@ -100,7 +100,7 @@ export class FinanceStore {
         createdAt: '2026-11-18T14:00:00Z'
       },
       {
-        id: crypto.randomUUID(),
+        id: 'ledger-seed-credit-01',
         transactionGroupId: txGroup,
         tenantId: 'tenant-dental-01',
         partnerId: 'partner-001',

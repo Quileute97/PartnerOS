@@ -139,7 +139,7 @@ export class AffiliateStore {
     // 2. Policy Versions
     this.policyVersions.set(c1.id, [
       {
-        id: crypto.randomUUID(),
+        id: 'policy-v1-camp-1',
         campaignId: c1.id,
         version: 1,
         commissionType: 'percentage',
@@ -155,7 +155,7 @@ export class AffiliateStore {
 
     this.policyVersions.set(c2.id, [
       {
-        id: crypto.randomUUID(),
+        id: 'policy-v1-camp-2',
         campaignId: c2.id,
         version: 1,
         commissionType: 'fixed_amount',
@@ -171,7 +171,7 @@ export class AffiliateStore {
 
     this.policyVersions.set(c3.id, [
       {
-        id: crypto.randomUUID(),
+        id: 'policy-v1-camp-3',
         campaignId: c3.id,
         version: 1,
         commissionType: 'percentage',
@@ -184,7 +184,7 @@ export class AffiliateStore {
         createdAt: '2026-10-15T00:00:00Z'
       },
       {
-        id: crypto.randomUUID(),
+        id: 'policy-v2-camp-3',
         campaignId: c3.id,
         version: 2,
         commissionType: 'percentage',
